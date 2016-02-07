@@ -15,6 +15,7 @@
 
 #define DEG_TO_RAD(X) (M_PI*(X)/180)
 
+// http://blog.saikoled.com/post/44677718712/how-to-convert-from-hsi-to-rgb-white
 void hsi2rgbw(float H, float S, float I, int* rgbw) {
   int r, g, b, w;
   float cos_h, cos_1047_h;
@@ -259,8 +260,12 @@ Washer w16(dmx, 16);
 Washer w21(dmx, 21);
 Washer w26(dmx, 26);
 
-Wheel wh11(w11, 20000);
-Wheel wh16(w16, 25000, 100);
+Wheel wh1(w1, 20000);
+Wheel wh6(w6, 30000);
+Wheel wh11(w11, 30000);
+Wheel wh16(w16, 30000);
+Wheel wh21(w21, 25000);
+Wheel wh26(w26, 25000);
 
 Wheels wheels;
 
@@ -275,7 +280,7 @@ const char* atopassword = "***";
 
 
 void setup() {
-    dmx.init(30); // initialize with bus length
+    dmx.init(32); // initialize with bus length
     Serial.begin(115200);
     Serial.println();
     Serial.println("Startup!");
@@ -366,9 +371,12 @@ void setup() {
     ArduinoOTA.begin();
 
 
-    wheels.addWheel(0, &wh16);
+    wheels.addWheel(0, &wh1);
+    wheels.addWheel(1, &wh6);
     wheels.addWheel(1, &wh11);
-    // wheels.addWheel(1, Wheel(w16, 20000));
+    wheels.addWheel(1, &wh16);
+    wheels.addWheel(2, &wh21);
+    wheels.addWheel(2, &wh26);
     wheels.start();
 }
 
@@ -379,9 +387,5 @@ void loop() {
 
     wheels.step();
     dmx.update();
-    Serial.println("update");
-    delay(100);
+    delay(50);
 }
-
-
-

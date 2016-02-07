@@ -7,9 +7,8 @@ function setColor() {
         '&b=' + form.elements['b'].value +
         '&a=' + form.elements['a'].value;
 
-    console.log('http://rgbdmx.local/light?' + params);
     var request = new XMLHttpRequest();
-    request.open('GET', 'http://rgbdmx.local/light?' + params, true);
+    request.open('GET', '/light?' + params, true);
     request.send(null);
 }
 
@@ -21,13 +20,13 @@ function setWheel() {
         '&s=' + form.elements['s'].value;
 
     var request = new XMLHttpRequest();
-    request.open('GET', 'http://rgbdmx.local/w?' + params, true);
+    request.open('GET', '/w?' + params, true);
     request.send(null);
 }
 
 function toggle() {
     var request = new XMLHttpRequest();
-    request.open('GET', 'http://rgbdmx.local/light', true);
+    request.open('GET', '/light', true);
     request.send(null);
 }
 
@@ -39,7 +38,7 @@ function toggle() {
 Colorwheel Control:<br/>
 <br/>
 <form id='wheelForm'>
-Group:      <input id="g" type="range" min="0" max="1" step="1" /><br/>
+Group:      <input id="g" type="range" min="0" max="2" step="1" /><br/>
 Duration:   <input id="d" type="range" min="2" max="180" step="1" value="60" /><br/>
 Saturation: <input id="s" type="range" min="0" max="100" step="1"  value="70" /><br/>
 Intensity:  <input id="i" type="range" min="0" max="100" step="1"  value="70" /><br/>

@@ -7,6 +7,7 @@
 #include <ArduinoOTA.h>
 
 #include "index_html.h"
+#include "settings.h"
 
 
 #define min(a,b) ((a)<(b)?(a):(b))
@@ -270,13 +271,6 @@ Wheel wh26(w26, 25000);
 Wheels wheels;
 
 ESP8266WebServer server = ESP8266WebServer(80);
-
-
-// WiFi network settings
-const char* ssid     = "mainframe-legacy";
-const char* password = "***";
-const char* host = "wallwasher";
-const char* atopassword = "***";
 
 
 void setup() {

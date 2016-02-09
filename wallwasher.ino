@@ -283,10 +283,10 @@ Washer w21(dmx, 21);
 Washer w26(dmx, 26);
 Spot s30(dmx, 30);
 
-Wheel wh1(w1, 20000);
-Wheel wh6(w6, 30000);
-Wheel wh11(w11, 30000);
-Wheel wh16(w16, 30000);
+Wheel  wh1(w1,  20000);
+Wheel  wh6(w6,  60000, 60, 100);
+Wheel wh11(w11, 60000, 70, 100);
+Wheel wh16(w16, 60000, 60, 100);
 Wheel wh21(w21, 25000);
 Wheel wh26(w26, 25000);
 Wheel wh30(s30, 25000);

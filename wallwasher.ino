@@ -77,7 +77,7 @@ public:
 };
 
 class Washer {
-private:
+protected:
     int chan;
     float scale;
     DMXESPSerial dmx;
@@ -98,21 +98,14 @@ public:
         }
     }
 
-    void black() {
-        dmx.write(chan, 0);
-        dmx.write(chan+1, 0);
-        dmx.write(chan+2, 0);
-        dmx.write(chan+3, 0);
-    }
-
-    void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+    virtual void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
         dmx.write(chan+0, (uint8_t)(float(r)*scale));
         dmx.write(chan+1, (uint8_t)(float(g)*scale));
         dmx.write(chan+2, (uint8_t)(float(b)*scale));
         dmx.write(chan+3, (uint8_t)(float(a)*scale));
     }
 
-    void set(Color c) {
+    virtual void set(Color c) {
         dmx.write(chan+0, (uint8_t)(float(c.r)*scale));
         dmx.write(chan+1, (uint8_t)(float(c.g)*scale));
         dmx.write(chan+2, (uint8_t)(float(c.b)*scale));
@@ -120,6 +113,27 @@ public:
     }
 };
 
+
+// Spot is a Washer without amber
+class Spot : public Washer {
+public:
+    Spot(DMXESPSerial dmx, int chan) :
+        Washer(dmx, chan)
+    {}
+
+    virtual void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+        dmx.write(chan+0, (uint8_t)(float(r)*scale));
+        dmx.write(chan+1, (uint8_t)(float(g)*scale));
+        dmx.write(chan+2, (uint8_t)(float(b)*scale));
+    }
+
+    virtual void set(Color c) {
+        dmx.write(chan+0, (uint8_t)(float(c.r)*scale));
+        dmx.write(chan+1, (uint8_t)(float(c.g)*scale));
+        dmx.write(chan+2, (uint8_t)(float(c.b)*scale));
+    }
+
+};
 
 class Wheel {
 private:
@@ -260,6 +274,7 @@ Washer w11(dmx, 11);
 Washer w16(dmx, 16);
 Washer w21(dmx, 21);
 Washer w26(dmx, 26);
+Spot s30(dmx, 30);
 
 Wheel wh1(w1, 20000);
 Wheel wh6(w6, 30000);
@@ -267,6 +282,7 @@ Wheel wh11(w11, 30000);
 Wheel wh16(w16, 30000);
 Wheel wh21(w21, 25000);
 Wheel wh26(w26, 25000);
+Wheel wh30(s30, 25000);
 
 Wheels wheels;
 
@@ -274,7 +290,7 @@ ESP8266WebServer server = ESP8266WebServer(80);
 
 
 void setup() {
-    dmx.init(32); // initialize with bus length
+    dmx.init(64); // initialize with bus length
     Serial.begin(115200);
     Serial.println();
     Serial.println("Startup!");
@@ -371,6 +387,7 @@ void setup() {
     wheels.addWheel(1, &wh16);
     wheels.addWheel(2, &wh21);
     wheels.addWheel(2, &wh26);
+    wheels.addWheel(2, &wh30);
     wheels.start();
 }
 

@@ -250,6 +250,13 @@ public:
     }
 
     void setLightColor(Color c) {
+        // clip max power
+        if ((c.r + c.g + c.b + c.a) > 800) {
+            c.r = (float)(c.r)*0.8;
+            c.g = (float)(c.g)*0.8;
+            c.b = (float)(c.b)*0.8;
+            c.a = (float)(c.a)*0.8;
+        }
         color = c;
     }
 

@@ -142,6 +142,7 @@ private:
     int duration;
     int intensity;
     int saturation;
+    int hueOffset;
 public:
     Washer w;
 
@@ -154,6 +155,14 @@ public:
     void start() {
         running = true;
         startTime = millis();
+    }
+
+    void reset() {
+        startTime = millis();
+    }
+
+    void setHueOffset(int v) {
+        hueOffset = v;
     }
 
     void setDuration(int d) {
@@ -178,13 +187,13 @@ public:
         }
 
         int rgbw[4];
-        hsi2rgbw(progress*360, (float)saturation/100, (float)intensity/100, &rgbw[0]);
+        hsi2rgbw(progress*360+hueOffset, (float)saturation/100, (float)intensity/100, &rgbw[0]);
 
         w.set(rgbw[0], rgbw[1], rgbw[2], rgbw[3]);
     }
 };
 
-
+const int ALL_GROUPS = -1;
 const int MAX_WASHERS = 8;
 
 class Wheels {
@@ -217,9 +226,17 @@ public:
         }
     }
 
+    void setWave(int offset, int duration) {
+        for (int i = 0; i < num; i++) {
+                wheels[i]->setHueOffset(offset*i);
+                wheels[i]->setDuration(duration);
+                wheels[i]->reset();
+        }
+    }
+
     void setDuration(int group, int v) {
         for (int i = 0; i < num; i++) {
-            if (groupIds[i] == group) {
+            if (group == ALL_GROUPS || groupIds[i] == group) {
                 wheels[i]->setDuration(v);
             }
         }
@@ -227,7 +244,7 @@ public:
 
     void setSaturation(int group, int v) {
         for (int i = 0; i < num; i++) {
-            if (groupIds[i] == group) {
+            if (group == ALL_GROUPS || groupIds[i] == group) {
                 wheels[i]->setSaturation(v);
             }
         }
@@ -235,7 +252,7 @@ public:
 
     void setIntensity(int group, int v) {
         for (int i = 0; i < num; i++) {
-            if (groupIds[i] == group) {
+            if (group == ALL_GROUPS || groupIds[i] == group) {
                 wheels[i]->setIntensity(v);
             }
         }
@@ -380,6 +397,41 @@ void setup() {
         server.send(200, "text/plain", "OK");
     });
 
+    server.on("/wave", []() {
+        int duration = -1;
+        int offset = -1;
+        int intensity = -1;
+        int saturation = -1;
+        for (uint8_t i=0; i<server.args(); i++){
+            if (server.argName(i).equals("d")) {
+                duration = server.arg(i).toInt();
+            }
+            if (server.argName(i).equals("o")) {
+                offset = server.arg(i).toInt();
+            }
+            if (server.argName(i).equals("i")) {
+                intensity = server.arg(i).toInt();
+            }
+            if (server.argName(i).equals("s")) {
+                saturation = server.arg(i).toInt();
+            }
+        }
+        if (duration != -1 && offset != -1) {
+            wheels.setWave(offset, duration);
+        }
+        if (intensity != -1) {
+            wheels.setIntensity(ALL_GROUPS, intensity);
+        }
+        if (saturation != -1) {
+            wheels.setSaturation(ALL_GROUPS, saturation);
+        }
+
+        Serial.print(duration); Serial.print(" ");
+        Serial.print(offset); Serial.print(" ");
+        Serial.println("");
+        server.send(200, "text/plain", "OK");
+    });
+
     server.begin();
     MDNS.addService("http", "tcp", 80);
 
@@ -395,6 +447,11 @@ void setup() {
     wheels.addWheel(2, &wh21);
     wheels.addWheel(2, &wh26);
     wheels.addWheel(2, &wh30);
+
+
+    wheels.setWave(30, 20000);
+    wheels.setIntensity(ALL_GROUPS, 100);
+    wheels.setSaturation(ALL_GROUPS, 60);
     wheels.start();
 }
 

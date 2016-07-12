@@ -183,7 +183,7 @@ public:
 };
 
 const int ALL_GROUPS = -1;
-const int MAX_WASHERS = 8;
+const int MAX_WASHERS = 16;
 
 class Wheels {
 private:

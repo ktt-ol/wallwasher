@@ -288,6 +288,9 @@ Washer w16(dmx, 16);
 Washer w21(dmx, 21);
 Washer w26(dmx, 26);
 Washer s30(dmx, 30);
+Washer s40(dmx, 40);
+Washer s45(dmx, 45);
+
 
 Wheel  wh1(w1,  20000);
 Wheel  wh6(w6,  60000, 60, 100);
@@ -296,6 +299,8 @@ Wheel wh16(w16, 60000, 60, 100);
 Wheel wh21(w21, 25000);
 Wheel wh26(w26, 25000);
 Wheel wh30(s30, 25000);
+Wheel wh40(s40, 25000);
+Wheel wh45(s45, 25000);
 
 Wheels wheels;
 
@@ -436,6 +441,8 @@ void setup() {
     wheels.addWheel(2, &wh21);
     wheels.addWheel(2, &wh26);
     wheels.addWheel(2, &wh30);
+    wheels.addWheel(3, &wh40);
+    wheels.addWheel(3, &wh45);
 
 
     wheels.setWave(30, 20000);

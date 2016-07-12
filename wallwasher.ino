@@ -81,12 +81,18 @@ protected:
     int chan;
     float scale;
     DMXESPSerial dmx;
+    bool amber;
 public:
     Washer(DMXESPSerial dmx, int chan) :
         scale(1.0),
         dmx(dmx),
-        chan(chan)
+        chan(chan),
+        amber(true)
     {}
+
+    void setAmber(bool enable) {
+        amber = enable;
+    }
 
     void setScale(float s) {
         if (s > 1.0) {
@@ -98,42 +104,25 @@ public:
         }
     }
 
-    virtual void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+    void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
         dmx.write(chan+0, (uint8_t)(float(r)*scale));
         dmx.write(chan+1, (uint8_t)(float(g)*scale));
         dmx.write(chan+2, (uint8_t)(float(b)*scale));
-        dmx.write(chan+3, (uint8_t)(float(a)*scale));
+        if (amber) {
+            dmx.write(chan+3, (uint8_t)(float(a)*scale));
+        }
     }
 
-    virtual void set(Color c) {
+    void set(Color c) {
         dmx.write(chan+0, (uint8_t)(float(c.r)*scale));
         dmx.write(chan+1, (uint8_t)(float(c.g)*scale));
         dmx.write(chan+2, (uint8_t)(float(c.b)*scale));
-        dmx.write(chan+3, (uint8_t)(float(c.a)*scale));
+        if (amber) {
+            dmx.write(chan+3, (uint8_t)(float(c.a)*scale));
+        }
     }
 };
 
-
-// Spot is a Washer without amber
-class Spot : public Washer {
-public:
-    Spot(DMXESPSerial dmx, int chan) :
-        Washer(dmx, chan)
-    {}
-
-    virtual void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-        dmx.write(chan+0, (uint8_t)(float(r)*scale));
-        dmx.write(chan+1, (uint8_t)(float(g)*scale));
-        dmx.write(chan+2, (uint8_t)(float(b)*scale));
-    }
-
-    virtual void set(Color c) {
-        dmx.write(chan+0, (uint8_t)(float(c.r)*scale));
-        dmx.write(chan+1, (uint8_t)(float(c.g)*scale));
-        dmx.write(chan+2, (uint8_t)(float(c.b)*scale));
-    }
-
-};
 
 class Wheel {
 private:
@@ -298,7 +287,7 @@ Washer w11(dmx, 11);
 Washer w16(dmx, 16);
 Washer w21(dmx, 21);
 Washer w26(dmx, 26);
-Spot s30(dmx, 30);
+Washer s30(dmx, 30);
 
 Wheel  wh1(w1,  20000);
 Wheel  wh6(w6,  60000, 60, 100);
@@ -439,7 +428,7 @@ void setup() {
     ArduinoOTA.setPassword(atopassword);
     ArduinoOTA.begin();
 
-
+    wh30.w.setAmber(false);
     wheels.addWheel(0, &wh1);
     wheels.addWheel(1, &wh6);
     wheels.addWheel(1, &wh11);
